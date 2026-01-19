@@ -1,10 +1,8 @@
 import _ from 'lodash';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useEditor } from '../../Hooks/Editor.hook';
-import { Col, Input, Row } from 'antd';
-import { useValue} from '../../Hooks/Attribute.hook';
-import  {useVisibility} from '../../Hooks/Attribute.hook';
-import FormItem from 'antd/lib/form/FormItem';
+import { Box, Grid, TextField, InputAdornment } from '@mui/material';
+import { useValue, useVisibility } from '../../Hooks/Attribute.hook';
 
 const ATTRIBUTE = 'href';
 
@@ -18,56 +16,65 @@ const Link = () => {
     if (visible) {
       setValue(getValue());
     }
-  }, [visible, path]);
+  }, [visible, path, getValue]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    const newValue = e.target.value;
+    setValue(newValue);
+
     if (path && visible) {
-      setValueInState(e.target.value);
+      setValueInState(newValue);
     }
   };
 
   const setValueInState = (userValue: string) => {
-    let json = {};
-    let element = _.get(mjmlJson, path);
+    const element = _.get(mjmlJson, path);
     element.attributes[ATTRIBUTE] = userValue;
-    json = _.set(mjmlJson, path, element);
+    const json = _.set(mjmlJson, path, element);
     setMjmlJson({ ...json });
   };
 
-  // if entered url does not contain 'https://' | 'http://' add it on blur event,
-  // after the user finises typing.
-  const onBlur = (e: any) => {
-    if (e && e.target && e.target.value) {
+  // If URL does not contain protocol, add https:// on blur
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (e.target?.value) {
       const url = addHttps(e.target.value);
       setValueInState(url);
       setValue(url);
     }
   };
 
-  const FormItem2 = () => {
+  if (!visible) return null;
+
   return (
-   
-      <Row>
-        <Col span={24}>
-          <Input addonBefore={ATTRIBUTE} onBlur={onBlur} onChange={handleChange} value={value} />
-        </Col>
-      </Row>
-   
+    <Box>
+      <Grid container>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            size="small"
+            value={value}
+            onChange={handleChange}
+            onBlur={onBlur}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  {ATTRIBUTE}
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
-  return visible ? (
-    <FormItem2 />
-  ) : null;
-};
-
 const addHttps = (url: string) => {
-  url = url.trim();
-  if (url && !url.includes('https://') && !url.includes('http://')) {
-    url = `https://${url}`;
+  let value = url.trim();
+  if (value && !value.startsWith('http://') && !value.startsWith('https://')) {
+    value = `https://${value}`;
   }
-  return url;
+  return value;
 };
 
 export { Link, addHttps };
