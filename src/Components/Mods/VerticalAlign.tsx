@@ -1,4 +1,4 @@
-import { Button, Col, Form, Row, Tooltip } from 'antd';
+import { Button, Grid, Tooltip, Typography } from '@mui/material';
 import { useVisibility } from '../../Hooks/Attribute.hook';
 import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
 import { useEditor } from '../../Hooks/Editor.hook';
@@ -11,14 +11,17 @@ interface VerticalAlignProps {
 }
 
 export const VerticalAlign = ({ activePath }: VerticalAlignProps) => {
-  const [visible, path] = useVisibility({ attribute: ATTRIBUTE, customPath: activePath });
+  const [visible, path] = useVisibility({
+    attribute: ATTRIBUTE,
+    customPath: activePath,
+  });
   const { mjmlJson, setMjmlJson } = useEditor();
   const { active } = useHtmlWrapper();
 
   const onClick = (value: string) => {
     if (active && visible && path) {
-      let item = _.get(mjmlJson, path);
-      if (item && item.attributes) {
+      const item = _.get(mjmlJson, path);
+      if (item?.attributes) {
         item.attributes[ATTRIBUTE] = value;
         const updated = _.set(mjmlJson, path, item);
         setMjmlJson({ ...updated });
@@ -26,33 +29,48 @@ export const VerticalAlign = ({ activePath }: VerticalAlignProps) => {
     }
   };
 
-  return visible ? (
-    <Row>
-      <Col flex="auto">
-        <Form.Item label="Vertical Align"></Form.Item>
-      </Col>
-      <Col>
-        <Row justify="space-between" gutter={[16, 0]}>
-          <Tooltip title="Top">
-            <Button onClick={() => onClick('top')} type="ghost">Top</Button>
-          </Tooltip>
+  if (!visible) return null;
 
-          <Col>
+  return (
+    <Grid container alignItems="center" spacing={2}>
+      {/* Label */}
+      <Grid item xs>
+        <Typography variant="subtitle2">
+          Vertical Align
+        </Typography>
+      </Grid>
+
+      {/* Actions */}
+      <Grid item>
+        <Grid container spacing={2}>
+          <Grid item>
+            <Tooltip title="Top">
+              <Button variant="text" onClick={() => onClick('top')}>
+                Top
+              </Button>
+            </Tooltip>
+          </Grid>
+
+          <Grid item>
             <Tooltip
               placement="left"
-              title="Middle :Note: all columns in section must be set to middle, for this to work."
+              title="Middle : Note: all columns in section must be set to middle, for this to work."
             >
-              <Button onClick={() => onClick('middle')} type="ghost">Middle</Button>
+              <Button variant="text" onClick={() => onClick('middle')}>
+                Middle
+              </Button>
             </Tooltip>
-          </Col>
+          </Grid>
 
-          <Col>
+          <Grid item>
             <Tooltip title="Bottom">
-              <Button onClick={() => onClick('bottom')} type="ghost">Bottom</Button>
+              <Button variant="text" onClick={() => onClick('bottom')}>
+                Bottom
+              </Button>
             </Tooltip>
-          </Col>
-        </Row>
-      </Col>
-    </Row>
-  ) : null;
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
 };
