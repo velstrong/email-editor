@@ -14,7 +14,7 @@ import { Padding } from '../../Components/Mods/Paddings';
 import { Height, Width } from '../../Components/Mods/WidthHeight';
 import styled from 'styled-components';
 import css from './Editor.module.scss';
-import { Drawer, Tabs } from 'antd';
+import { Drawer, Tabs, Tab, Box } from '@mui/material';
 import { ColumnSelector } from '../../Components/ColumnSelector';
 import { FontFamily } from '../../Components/Mods/FontFamily';
 import { UNDOREDO } from '../../Utils/undoRedo';
@@ -29,187 +29,136 @@ import { BodyAttributes } from '../../Components/BodyAttributes';
 
 const { TabPane } = Tabs;
 
+
+
 const CustomTabs = styled(Tabs)`
-  .ant-tabs-content {
+  height: 100%;
+
+  .MuiTabs-flexContainer {
     height: 100%;
   }
-  .ant-tabs-tab {
-    padding: 8px 16px !important;
-  }
-  .ant-tabs-tabpane {
-    padding-right: 0px !important;
+
+  .MuiTab-root {
+    padding: 8px 16px;
+    min-height: unset;
+    font-size: 12px;
   }
 `;
+
 
 export const Attributes = () => {
   const { mjmlJson } = useEditor();
   const { active } = useHtmlWrapper();
   const [isColumn, setIsColumn] = useState(false);
+  const [tab, setTab] = useState(1);
 
   useEffect(() => {
-    if (active && active.classList && active.className.includes('mj-column')) {
+    if (active?.className?.includes('mj-column')) {
       setIsColumn(true);
+    } else {
+      setIsColumn(false);
     }
-    isColumn && setIsColumn(false);
   }, [active]);
 
   return (
-    <CustomTabs
-      tabPosition="right"
-      defaultActiveKey="2"
-      style={{ height: '100%' }}
-      destroyInactiveTabPane={true}
-      title={'Attributes'}
-      size="small"
-      tabBarGutter={1}
-    >
-      {/* <TabPane tab="Attributes" key="1">
-        <Scrollbars style={{ height: '100%' }} autoHide={true}>
-          <div
-            className={css.mods}
-            onMouseDown={(e) => {
-              UNDOREDO.newAction(mjmlJson);
-            }}
-            onBlur={(e) => {
-              UNDOREDO.newAction(mjmlJson);
-            }}
-          >
-            {isColumn ? (
-              <div style={{ textAlign: 'center' }}>
-                The selected Item is a Column, to modify properties <h2> check "Column Properties" Tab</h2>
-              </div>
-            ) : (
-              <>
-                <Width />
-                <Height />
-                <Align />
-                <VerticalAlign />
-                <Content />
-                <LineHeight />
-                <FontSize />
-                <FontFamily />
-                <Padding />
-                <InnerPadding />
-                <ContainerBackground />
-                <Background />
-                <BackgroundImage />
-                <Border />
-                <Border label="Border Width" attribute_name="border-width" />
-                <Border label="Border Style" attribute_name="border-style" />
-                <Background label="Border Color" overrideAttribute="border-color" />
-                <CordinalBorder />
-                <BorderRadius />
-                <Link />
-                <Img />
-              </>
-            )}
-          </div>
-        </Scrollbars>
-      </TabPane> */}
+    <Box sx={{ height: '100%', display: 'flex' }}>
+      <CustomTabs
+        orientation="vertical"
+        value={tab}
+        onChange={(_, v) => setTab(v)}
+        sx={{ borderLeft: 1, borderColor: 'divider' }}
+      >
+        <Tab label="layout" />
+        <Tab
+          label={
+            <>
+              layout <br /> config
+            </>
+          }
+        />
+        <Tab
+          label={
+            <>
+              body <br /> config
+            </>
+          }
+        />
+      </CustomTabs>
 
-      <TabPane tab={<span style={{ fontSize: '12px' }}>layout</span>} key="2">
-        <Scrollbars style={{ height: '100%' }} autoHide={true}>
-          <div className={css.columns}>
-            <ColumnSelector />
-          </div>
-        </Scrollbars>
-      </TabPane>
-      <TabPane
-        tab={
-          <>
-            <span style={{ fontSize: '12px' }}>layout</span>
-            <br />
-            <span style={{ fontSize: '12px' }}>config</span>
-          </>
-        }
-        key="3"
-      >
-        <Scrollbars style={{ height: '100%' }} autoHide={true}>
-          <ColumnAttributes />
-        </Scrollbars>
-      </TabPane>
-      <TabPane
-        tab={
-          <>
-            <span style={{ fontSize: '12px' }}>body</span>
-            <br />
-            <span style={{ fontSize: '12px' }}>config</span>
-          </>
-        }
-        key="4"
-      >
-        <Scrollbars style={{ height: '100%' }} autoHide={true}>
-          <BodyAttributes />
-        </Scrollbars>
-      </TabPane>
-    </CustomTabs>
+      <Box sx={{ flex: 1 }}>
+        {tab === 0 && (
+          <Scrollbars style={{ height: '100%' }} autoHide>
+            <div className={css.columns}>
+              <ColumnSelector />
+            </div>
+          </Scrollbars>
+        )}
+
+        {tab === 1 && (
+          <Scrollbars style={{ height: '100%' }} autoHide>
+            <ColumnAttributes />
+          </Scrollbars>
+        )}
+
+        {tab === 2 && (
+          <Scrollbars style={{ height: '100%' }} autoHide>
+            <BodyAttributes />
+          </Scrollbars>
+        )}
+      </Box>
+    </Box>
   );
 };
 
+
 export const OnlyAttributesDrawer = () => {
   const { mjmlJson } = useEditor();
-  const { active, setActive } = useHtmlWrapper();
+  const { active } = useHtmlWrapper();
   const [isDisabled, setIsDisabled] = useState(false);
   const [visible, setVisible] = useState(false);
   const [init, setInit] = useState(false);
 
-  const onClose = () => {
-    setVisible(false);
-  };
-
   useEffect(() => {
-    // wierd bug in antd
-    if (active && !init) {
-      setInit(true);
-    }
+    if (active && !init) setInit(true);
 
     if (
-      active &&
-      ((active.classList && active.className.includes('mj-column')) ||
-        (active.classList && active.className.includes('mj-body')))
+      active?.className?.includes('mj-column') ||
+      active?.className?.includes('mj-body')
     ) {
       setIsDisabled(true);
     } else {
-      isDisabled && setIsDisabled(false);
+      setIsDisabled(false);
     }
   }, [active]);
 
   useEffect(() => {
-    if (!isDisabled && active) {
-      setVisible(true);
-    } else {
-      setVisible(false);
-    }
+    setVisible(!isDisabled && !!active);
   }, [isDisabled, active]);
 
-  return init ? (
+  if (!init) return null;
+
+  return (
     <Drawer
-      destroyOnClose={true}
-      width={'100%'}
-      getContainer={false}
-      title={
-        <div style={{ textAlign: 'center' }}>
-          <span>Attributes</span>
-        </div>
-      }
-      style={{ position: 'absolute', height: '100%' }}
-      onClose={onClose}
-      visible={visible}
-      maskClosable={false}
-      mask={false}
-      bodyStyle={{
-        padding: '8px 0px',
+      open={visible}
+      onClose={() => setVisible(false)}
+      anchor="right"
+      variant="persistent"
+      PaperProps={{
+        sx: {
+          width: '100%',
+          position: 'absolute',
+        },
       }}
     >
-      <Scrollbars style={{ height: '100%' }} autoHide={true}>
+      <Box sx={{ textAlign: 'center', p: 1 }}>
+        <span>Attributes</span>
+      </Box>
+
+      <Scrollbars style={{ height: '100%' }} autoHide>
         <div
           className={css.mods}
-          onMouseDown={(e) => {
-            UNDOREDO.newAction(mjmlJson);
-          }}
-          onBlur={(e) => {
-            UNDOREDO.newAction(mjmlJson);
-          }}
+          onMouseDown={() => UNDOREDO.newAction(mjmlJson)}
+          onBlur={() => UNDOREDO.newAction(mjmlJson)}
         >
           <Width />
           <Height />
@@ -235,5 +184,6 @@ export const OnlyAttributesDrawer = () => {
         </div>
       </Scrollbars>
     </Drawer>
-  ) : null;
+  );
 };
+
