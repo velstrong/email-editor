@@ -1,8 +1,13 @@
-import { Col, Input, Row } from 'antd';
-import FormItem from 'antd/lib/form/FormItem';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import {
+  Box,
+  Grid,
+  TextField,
+  InputAdornment,
+  Typography,
+} from '@mui/material';
 import { useValue, useVisibility } from '../../Hooks/Attribute.hook';
 import { useEditor } from '../../Hooks/Editor.hook';
 
@@ -16,60 +21,82 @@ const LineHeight = () => {
 
   useEffect(() => {
     if (visible && path) {
-      let value = getValue();
-      setValue(value);
+      setValue(getValue());
     }
-  }, [visible, path]);
+  }, [visible, path, getValue]);
 
-  const onChange = (e: any) => {
-    setValue(e.target.value);
-    if (visible && path && e && e.target) {
-      if (typeof e.target.value === 'number' && e.target.value < 0) {
-        e.target.value = 0;
-      }
-      SetValue(e.target.value.toString(), path, mjmlJson, setMjmlJson);
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+    setValue(newValue);
+
+    if (visible && path) {
+      SetValue(newValue.toString(), path, mjmlJson, setMjmlJson);
     }
   };
 
-  const addonBeforeClick = () => {
-    changeValue(visible, value, mjmlJson, path, setValue, setMjmlJson, 'dec');
+  const decrement = () => {
+    changeValue(visible, value, mjmlJson, path!, setValue, setMjmlJson, 'dec');
   };
 
-  const addonAfterClick = () => {
-    changeValue(visible, value, mjmlJson, path, setValue, setMjmlJson, 'inc');
+  const increment = () => {
+    changeValue(visible, value, mjmlJson, path!, setValue, setMjmlJson, 'inc');
   };
-  return visible ? (
-    
-      <Row>
-        <Col flex="auto">Line Height:</Col>
 
-        <Col flex="none">
-          <IncrementDecrementInput
-            onChange={onChange}
-            addonBefore={<span onClick={addonBeforeClick}>-</span>}
-            addonAfter={<span onClick={addonAfterClick}>+</span>}
+  if (!visible) return null;
+
+  return (
+    <Box>
+      <Grid container alignItems="center" spacing={2}>
+        <Grid item xs>
+          <Typography variant="body2">
+            Line Height:
+          </Typography>
+        </Grid>
+
+        <Grid item>
+          <IncrementDecrementTextField
+            size="small"
             value={value}
-            style={{ width: `${value ? value.toString().length + 12 : 12}ch ` }}
+            onChange={onChange}
+            InputProps={{
+              startAdornment: (
+                <Adornment onClick={decrement}>-</Adornment>
+              ),
+              endAdornment: (
+                <Adornment onClick={increment}>+</Adornment>
+              ),
+            }}
+            sx={{
+              width: `${value ? value.length + 12 : 12}ch`,
+            }}
           />
-        </Col>
-      </Row>
-   
-  ) : null;
+        </Grid>
+      </Grid>
+    </Box>
+  );
 };
 
-const IncrementDecrementInput = styled(Input)`
-  .ant-input-group-addon {
+/* ---------- styled components ---------- */
+
+const IncrementDecrementTextField = styled(TextField)`
+  .MuiInputAdornment-root {
     cursor: pointer;
     user-select: none;
-    padding:0px;
-    &:hover {
-      color: #40a9ff;
-    }
-    span{
-        padding 0 11px;
-    }
+    margin: 0;
   }
 `;
+
+const Adornment = styled(InputAdornment).attrs({
+  position: 'start',
+})`
+  cursor: pointer;
+  padding: 0 11px;
+  &:hover {
+    color: #1976d2;
+  }
+`;
+
+/* ---------- logic helpers (unchanged) ---------- */
 
 const changeValue = (
   visible: boolean | null,
@@ -81,35 +108,39 @@ const changeValue = (
   type: 'inc' | 'dec'
 ) => {
   if (visible && value) {
-    let existingValue: string | number = value;
-    let copy = value;
-    let increment;
-    if (existingValue.includes('%')) {
-      increment = type === 'inc' ? +10 : -10;
-      existingValue = existingValue.split('%')[0];
-      existingValue = parseInt(existingValue);
+    let existingValue: number;
+    let increment: number;
+
+    if (value.includes('%')) {
+      existingValue = parseInt(value.replace('%', ''), 10);
+      increment = type === 'inc' ? 10 : -10;
     } else {
-      increment = type === 'inc' ? +1 : -1;
-      existingValue = parseInt(existingValue);
+      existingValue = parseInt(value, 10);
+      increment = type === 'inc' ? 1 : -1;
     }
-    const toSearch = existingValue;
-    let valueIncrementNumber = Math.max(existingValue + increment, 0);
-    const valueToSet = copy.replace(toSearch.toString(), valueIncrementNumber.toString());
-    setValue(valueToSet);
-    SetValue(valueToSet.toString(), path, mjmlJson, setMjmlJson);
+
+    const nextValue = Math.max(existingValue + increment, 0);
+    const newValue = value.replace(
+      existingValue.toString(),
+      nextValue.toString()
+    );
+
+    setValue(newValue);
+    SetValue(newValue, path, mjmlJson, setMjmlJson);
   }
 };
 
-const SetValue = (valueToSet: string, path: string, mjmlJson: any, setMjmlJson: (arg: any) => void) => {
-  let item = _.get(mjmlJson, path);
-  if (item) {
-    if (item.attributes) {
-      item.attributes[ATTRIBUTE] = valueToSet;
-      const updated = _.set(mjmlJson, path, item);
-      if (updated) {
-        setMjmlJson({ ...updated });
-      }
-    }
+const SetValue = (
+  valueToSet: string,
+  path: string,
+  mjmlJson: any,
+  setMjmlJson: (arg: any) => void
+) => {
+  const item = _.get(mjmlJson, path);
+  if (item?.attributes) {
+    item.attributes[ATTRIBUTE] = valueToSet;
+    const updated = _.set(mjmlJson, path, item);
+    setMjmlJson({ ...updated });
   }
 };
 
