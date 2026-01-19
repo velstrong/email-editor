@@ -1,10 +1,8 @@
-import { Col, Collapse, Row } from 'antd';
 import { Button } from '../../Components/Button';
 import { Text } from '../../Components/Text';
 import ArrowDownwardOutlinedIcon from '@mui/icons-material/ArrowDownwardOutlined';
 import css from './Editor.module.scss';
-import '../../Assets/Css/antoveride.scss';
-import {Scrollbars} from 'react-custom-scrollbars-2';
+import { Scrollbars } from 'react-custom-scrollbars-2';
 import { Image } from '../../Components/Image';
 import { Spacer } from '../../Components/Spacer';
 import { Html } from '../../Components/Html';
@@ -13,29 +11,13 @@ import { Section } from '../../Components/Section';
 import { Social } from '../../Components/Social';
 import { SectionV2 } from '../../Components/SectionV2';
 
-const { Panel } = Collapse;
-
 const Header = ({ title }: { title: string }) => {
   return <p className={css.title}>{title}</p>;
 };
 
 export const ComponentBank = () => {
   return (
-    <Scrollbars style={{ height: '100%' }} autoHide={true}>
-      {/* <div style={{ padding: '8px', textAlign: 'center', fontSize: '16px', fontWeight: 'bold' }}>
-        <span>Components</span>
-      </div> */}
-      {/* <Collapse
-        expandIconPosition={'right'}
-        bordered={false}
-        defaultActiveKey={['1', '2']}
-        style={{ backgroundColor: 'rgb(255,255,255)' }}
-        expandIcon={({ isActive }) => <CaretDownOutlined rotate={isActive ? 0 : 180} />}
-      >
-        <Panel header={<Header title="Drag & Drop Section" />} key="1">
-          <Section />
-        </Panel> */}
-      {/* <Panel header={<Header title="Drag & Drop Content" />} key="2"> */}
+    <Scrollbars style={{ height: '100%' }} autoHide>
       <div className={css.components}>
         <SectionV2 />
         <Button />
@@ -46,8 +28,6 @@ export const ComponentBank = () => {
         <Html />
         <Social />
       </div>
-      {/* </Panel> */}
-      {/* </Collapse> */}
     </Scrollbars>
   );
 };
