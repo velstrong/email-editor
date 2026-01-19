@@ -1,9 +1,13 @@
-import { Button, Input, Popover, Select } from 'antd';
 import _ from 'lodash';
 import { useEffect, useRef, useState } from 'react';
-import { useCustomEditorPosition, useCustomEditorStatus } from '../../Hooks/CustomEditor.hook';
-import { useEditor } from '../../Hooks/Editor.hook';
-import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
+import {
+  Button,
+  TextField,
+  Popover,
+  Select,
+  MenuItem,
+  Box,
+} from '@mui/material';
 import {
   FormatSizeOutlined,
   FormatBoldOutlined,
@@ -12,6 +16,10 @@ import {
   GradientOutlined,
   LinkOutlined,
 } from '@mui/icons-material';
+
+import { useCustomEditorPosition, useCustomEditorStatus } from '../../Hooks/CustomEditor.hook';
+import { useEditor } from '../../Hooks/Editor.hook';
+import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
 import { InlineEditorActions } from '../../Utils/inlineEditorActions';
 import { ColorPicker } from '../ColorPicker';
 import { findClosestParent, findUniqueIdentifier } from '../../Utils/closestParent';
@@ -23,197 +31,163 @@ import { addHttps } from './Link';
 let r: any;
 
 const restoreSelection = () => {
-  let restoreSel = window.getSelection();
-  if (!restoreSel) {
-    return;
-  }
-  const temp = r;
-  restoreSel?.removeAllRanges();
-  restoreSel?.addRange(r);
-  r = temp;
+  const sel = window.getSelection();
+  if (!sel || !r) return;
+  sel.removeAllRanges();
+  sel.addRange(r);
 };
 
 const InlineEditor = () => {
-  const ref = useRef<any>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const { x, y } = useCustomEditorPosition();
   const { active } = useCustomEditorStatus();
   const { active: activeElement }: { active: HTMLDivElement } = useHtmlWrapper();
   const { mjmlJson, setMjmlJson } = useEditor();
   const [fontlist] = useFonts();
 
-  // on mount, override the default behaviour of the antd dropdown select
   useEffect(() => {
     if (ref.current) {
-      const toolbar = document.querySelectorAll('#customtoolbar .ant-select-selector');
-      if (toolbar) {
-        toolbar.forEach((item) => {
-          logger.log('attaching click event listener to container');
-          item.addEventListener('click', ResetEventBehaviour);
-        });
-        return () =>
-          toolbar.forEach((item) => {
-            logger.log('removing click event listener to container');
-            item.removeEventListener('click', ResetEventBehaviour);
-          });
-      }
+      const toolbar = ref.current.querySelectorAll('.MuiSelect-select');
+      toolbar.forEach((item) =>
+        item.addEventListener('mousedown', ResetEventBehaviour)
+      );
+      return () =>
+        toolbar.forEach((item) =>
+          item.removeEventListener('mousedown', ResetEventBehaviour)
+        );
     }
-  }, [ref]);
+  }, []);
 
   useEffect(() => {
     if (active && activeElement) {
       const uniqueIdentifier = findUniqueIdentifier(activeElement, activeElement.classList);
       if (uniqueIdentifier?.includes('mj-text')) {
-        let editor: any = activeElement.children[0].children[0];
+        const editor: HTMLElement = activeElement.children[0].children[0] as any;
 
-        const Event = (e: any) => {
+        const onFocusOut = () => {
           stateChangeCallback(editor, mjmlJson, setMjmlJson);
-          // e.stopPropagation();
-          // e.preventDefault();
-          // e.target.focus();
-          // return false;
         };
 
         const onKeyUp = () => {
           r = window.getSelection()?.getRangeAt(0);
         };
 
-        editor.addEventListener('focusout', Event, true);
-        editor.addEventListener('keyup', onKeyUp, false);
-        editor.addEventListener('click', onKeyUp, false);
+        editor.addEventListener('focusout', onFocusOut, true);
+        editor.addEventListener('keyup', onKeyUp);
+        editor.addEventListener('click', onKeyUp);
 
         editor.classList.add('editor-active');
         editor.setAttribute('contentEditable', 'true');
         editor.setAttribute('spellcheck', 'false');
 
-        if (r) {
-          // restoreSelection();
-        }
-
         return () => {
-          logger.log('custom editor: cleaning up dynamic attributes');
-          editor.removeEventListener('focusout', Event, true);
-          editor.removeEventListener('keyup', onKeyUp, false);
-          editor.removeEventListener('click', onKeyUp, false);
+          editor.removeEventListener('focusout', onFocusOut, true);
+          editor.removeEventListener('keyup', onKeyUp);
+          editor.removeEventListener('click', onKeyUp);
         };
       }
     }
   }, [activeElement, mjmlJson]);
 
   return (
-    <div
-      style={{
-        display: active ? 'block' : 'none',
+    <Box
+      ref={ref}
+      id="customtoolbar"
+      onMouseDown={ResetEventBehaviour}
+      sx={{
+        display: active ? 'flex' : 'none',
         position: 'fixed',
         top: `${y}px`,
         left: `${x}px`,
+        gap: 0.5,
         padding: '4px 8px',
         border: '1px solid black',
-        zIndex: 999,
         backgroundColor: '#fff',
-        transition: 'all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1)',
+        zIndex: 999,
       }}
-      id="customtoolbar"
-      ref={ref}
-      onMouseDown={ResetEventBehaviour}
     >
+      {/* Font size */}
       <Select
         size="small"
-        dropdownStyle={{ minWidth: '18px' }}
         defaultValue={2}
-        style={{ fontSize: '12px' }}
-        onChange={(value: any) => {
-          InlineEditorActions(null, 'size', value);
-        }}
+        onChange={(e) => InlineEditorActions(null, 'size', e.target.value)}
+        sx={{ fontSize: '12px' }}
       >
-        {Array.from(Array(7).keys()).map((i) => (
-          <Select.Option
-            onMouseDown={ResetEventBehaviour}
-            onFocus={ResetEventBehaviour}
-            style={{ fontSize: '12px' }}
+        {Array.from({ length: 7 }).map((_, i) => (
+          <MenuItem
+            key={i}
             value={i + 1}
-          >
-            <span onMouseDown={ResetEventBehaviour} onFocus={ResetEventBehaviour}>
-              {i + 1}
-            </span>
-          </Select.Option>
-        ))}
-      </Select>
-      <Select
-        size="small"
-        defaultValue={'Ubuntu'}
-        dropdownStyle={{ minWidth: '140px' }}
-        style={{ fontSize: '12px' }}
-        onChange={(value: any) => {
-          InlineEditorActions(null, 'fontFamily', value);
-        }}
-        onMouseDown={ResetEventBehaviour}
-      >
-        {fontlist.map((font) => (
-          <Select.Option
             onMouseDown={ResetEventBehaviour}
-            onFocus={ResetEventBehaviour}
-            style={{ fontSize: '12px' }}
-            value={font}
           >
-            <span onMouseDown={ResetEventBehaviour} onFocus={ResetEventBehaviour}>
-              {font}
-            </span>
-          </Select.Option>
+            {i + 1}
+          </MenuItem>
         ))}
       </Select>
 
-      <Popover
-        overlayClassName="inline-editor-popover-color-picker"
-        trigger="click"
-        placement="bottom"
-        content={
-          <ColorPicker
-            handleChange={(color) => {
-              InlineEditorActions(null, 'fontColor', color);
-            }}
-            mouseDown={false}
-          />
-        }
-        destroyTooltipOnHide={true}
+      {/* Font family */}
+      <Select
+        size="small"
+        defaultValue="Ubuntu"
+        onChange={(e) => InlineEditorActions(null, 'fontFamily', e.target.value)}
+        sx={{ fontSize: '12px', minWidth: 140 }}
+        onMouseDown={ResetEventBehaviour}
       >
-        <Button startIcon={<FormatSizeOutlined />} style={{ fontSize: '12px' }} size="small"></Button>
-      </Popover>
-      <Popover
-        overlayClassName="inline-editor-popover-color-picker"
-        trigger="click"
-        placement="bottom"
-        content={
-          <ColorPicker
-            handleChange={(color) => {
-              InlineEditorActions(null, 'color', color);
-            }}
-            mouseDown={false}
-          />
-        }
-        destroyTooltipOnHide={true}
-      >
-        <Button startIcon={<GradientOutlined />} style={{ fontSize: '12px' }} size="small"></Button>
-      </Popover>
-      <Button
-        startIcon={<FormatBoldOutlined />}
-        onClick={(e) => InlineEditorActions(e, 'bold')}
-        style={{ fontSize: '12px' }}
-        size="small"
-      ></Button>
-      <Button
-        startIcon={<FormatItalicOutlined />}
-        onClick={(e) => InlineEditorActions(e, 'italics')}
-        style={{ fontSize: '12px' }}
-        size="small"
-      ></Button>
-      <Button
-        startIcon={<FormatUnderlinedOutlined />}
-        onClick={(e) => InlineEditorActions(e, 'underline')}
-        style={{ fontSize: '12px' }}
-        size="small"
-      ></Button>
+        {fontlist.map((font) => (
+          <MenuItem
+            key={font}
+            value={font}
+            onMouseDown={ResetEventBehaviour}
+          >
+            {font}
+          </MenuItem>
+        ))}
+      </Select>
+
+      {/* Font size color */}
+      <ColorPopover
+        icon={<FormatSizeOutlined />}
+        onChange={(color) => InlineEditorActions(null, 'fontColor', color)}
+      />
+
+      {/* Text color */}
+      <ColorPopover
+        icon={<GradientOutlined />}
+        onChange={(color) => InlineEditorActions(null, 'color', color)}
+      />
+
+      <IconButton icon={<FormatBoldOutlined />} onClick={(e) => InlineEditorActions(e, 'bold')} />
+      <IconButton icon={<FormatItalicOutlined />} onClick={(e) => InlineEditorActions(e, 'italics')} />
+      <IconButton icon={<FormatUnderlinedOutlined />} onClick={(e) => InlineEditorActions(e, 'underline')} />
+
       <LinkItem setLinkCallback={(e) => InlineEditorActions(e, 'link')} />
-    </div>
+    </Box>
+  );
+};
+
+/* ---------- helpers ---------- */
+
+const IconButton = ({ icon, onClick }: any) => (
+  <Button size="small" onClick={onClick} sx={{ minWidth: 28 }}>
+    {icon}
+  </Button>
+);
+
+const ColorPopover = ({ icon, onChange }: any) => {
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  return (
+    <>
+      <Button size="small" onClick={(e) => setAnchorEl(e.currentTarget)}>
+        {icon}
+      </Button>
+      <Popover
+        open={Boolean(anchorEl)}
+        anchorEl={anchorEl}
+        onClose={() => setAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <ColorPicker handleChange={onChange} mouseDown={false} />
+      </Popover>
+    </>
   );
 };
 
@@ -224,99 +198,77 @@ interface LinkItemProps {
 const LinkItem = ({ setLinkCallback }: LinkItemProps) => {
   const [active, setActive] = useState(false);
   const [link, setLink] = useState('');
-  const linkRef = useRef<any>(null);
-
-  const onChange = (e: any) => {
-    setLink(e.target.value);
-  };
-
-  const onMouseDown = (e: any) => {
-    restoreSelection();
-  };
 
   return (
-    <Popover
-      visible={active}
-      content={
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <Input
-            className="inline-editor-link"
-            ref={linkRef}
+    <>
+      <Button
+        size="small"
+        onClick={(e) => {
+          ResetEventBehaviour(e);
+          setActive(true);
+          setLink('');
+        }}
+      >
+        <LinkOutlined />
+      </Button>
+
+      <Popover
+        open={active}
+        onClose={() => setActive(false)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+      >
+        <Box sx={{ display: 'flex', gap: 1, p: 1 }}>
+          <TextField
+            size="small"
             value={link}
-            onMouseDown={onMouseDown}
-            onChange={onChange}
             placeholder="link"
+            onMouseDown={restoreSelection}
+            onChange={(e) => setLink(e.target.value)}
           />
           <Button
-            type="default"
-            onMouseDown={ResetEventBehaviour}
+            variant="outlined"
             onClick={() => {
               setActive(false);
               restoreSelection();
               document.execCommand(
                 'insertHTML',
                 false,
-                '<a href="' + addHttps(link) + '" target="_blank">' + document.getSelection() + '</a>'
+                `<a href="${addHttps(link)}" target="_blank">${document.getSelection()}</a>`
               );
             }}
           >
             create
           </Button>
-        </div>
-      }
-      trigger="click"
-      placement="bottom"
-    >
-      <Button
-        style={{ fontSize: '12px' }}
-        onClick={(e) => {
-          ResetEventBehaviour(e);
-          setActive(!active);
-          setLink('');
-        }}
-        size="small"
-        startIcon={<LinkOutlined />}
-      ></Button>
-    </Popover>
+        </Box>
+      </Popover>
+    </>
   );
 };
 
+/* ---------- unchanged helpers ---------- */
+
 const stateChangeCallback = (item: any, mjmlJson: any, setMjmlJson: any) => {
-  logger.log(`custom Inline Editor: updating state callback`);
   const closestParent = findClosestParent(item);
-  if (!closestParent) {
-    return;
-  }
-  const uniqueIdentifier = closestParent;
-  if (uniqueIdentifier?.includes('mj-text')) {
-    const find = findElementInJson(mjmlJson, uniqueIdentifier);
+  if (!closestParent) return;
+
+  if (closestParent.includes('mj-text')) {
+    const find = findElementInJson(mjmlJson, closestParent);
     if (find) {
       const [, path] = find;
-      let itemJson = _.get(mjmlJson, path.slice(1));
-      if (itemJson) {
-        let updateToSend = _.cloneDeep(itemJson);
-        logger.log('inline editor: updating', item);
-        const html = item.innerHTML;
-        updateToSend.content = html;
-        const updated = _.set(mjmlJson, path.slice(1), updateToSend);
-        setMjmlJson({ ...updated });
-      }
+      const update = _.cloneDeep(_.get(mjmlJson, path.slice(1)));
+      update.content = item.innerHTML;
+      setMjmlJson({ ..._.set(mjmlJson, path.slice(1), update) });
     }
   }
 };
 
 export const ResetEventBehaviour = (e: any) => {
-  logger.log('::reset', e.target);
   if (
-    e.target &&
-    e.target.tagName === 'INPUT' &&
-    e.target.className &&
-    e.target.className.includes('inline-editor-link')
+    e.target?.tagName === 'INPUT' &&
+    e.target.className?.includes('inline-editor-link')
   ) {
-    logger.log('::reset, returning');
     return;
   }
-  logger.log('::reset->reset behaviour', e.target);
   e.preventDefault();
   e.stopPropagation();
   return false;
