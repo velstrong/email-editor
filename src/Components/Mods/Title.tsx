@@ -1,4 +1,4 @@
-import { Form, Row, Col, Input } from 'antd';
+import { Box, Grid, TextField, InputAdornment } from '@mui/material';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useEditor } from '../../Hooks/Editor.hook';
@@ -8,43 +8,60 @@ interface TitleProps {
 }
 
 const Title = ({ itemIndex: index }: TitleProps) => {
-  const [value, setValue] = useState();
+  const [value, setValue] = useState<string | undefined>();
   const { mjmlJson, setMjmlJson } = useEditor();
 
   useEffect(() => {
     if (index !== -1) {
       const titleConfig = mjmlJson.children[0].children[index];
-      if (titleConfig && titleConfig.content) {
+      if (titleConfig?.content) {
         setValue(titleConfig.content);
       }
     }
-  }, [index]);
+  }, [index, mjmlJson]);
 
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (index !== -1) {
       setValue(e.target.value);
     }
   };
 
-  const onBlur = (e: any) => {
-    if (e && index !== -1) {
-      let titleConfig = _.cloneDeep(mjmlJson.children[0].children[index]);
+  const onBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (index !== -1) {
+      const titleConfig = _.cloneDeep(mjmlJson.children[0].children[index]);
       if (titleConfig) {
-        titleConfig['content'] = e.target.value;
-        const update = _.set(mjmlJson, `children[0].children[${index}]`, titleConfig);
+        titleConfig.content = e.target.value;
+        const update = _.set(
+          mjmlJson,
+          `children[0].children[${index}]`,
+          titleConfig
+        );
         setMjmlJson({ ...update });
       }
     }
   };
 
   return (
-    <Form.Item>
-      <Row>
-        <Col span={24}>
-          <Input addonBefore="title" value={value} onBlur={onBlur} onChange={handleChange} />
-        </Col>
-      </Row>
-    </Form.Item>
+    <Box>
+      <Grid container>
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            size="small"
+            value={value || ''}
+            onChange={handleChange}
+            onBlur={onBlur}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  title
+                </InputAdornment>
+              ),
+            }}
+          />
+        </Grid>
+      </Grid>
+    </Box>
   );
 };
 
