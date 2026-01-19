@@ -1,6 +1,6 @@
-import { Form, Input, Row, Col } from 'antd';
 import _ from 'lodash';
 import { ChangeEvent, useMemo } from 'react';
+import { Box, Grid, TextField, Typography, InputAdornment } from '@mui/material';
 import { useVisibility } from '../../Hooks/Attribute.hook';
 import { useEditor } from '../../Hooks/Editor.hook';
 
@@ -9,51 +9,49 @@ interface PaddingProps {
 }
 
 const Padding = ({ activePath }: PaddingProps) => {
-  let [visible, path, active] = useVisibility({ attribute: 'padding', customPath: activePath });
+  const [visible, path, active] = useVisibility({
+    attribute: 'padding',
+    customPath: activePath,
+  });
   const { mjmlJson, setMjmlJson } = useEditor();
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>, direction: string) => {
-    if (e.currentTarget.value === '') {
-      e.currentTarget.value = '0';
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement>,
+    direction: string
+  ) => {
+    let value = e.currentTarget.value;
+    if (value === '') {
+      value = '0';
     }
-    // if (!value.includes('px')) {
-    //   e.currentTarget.value = `${value}px`;
-    // }
-    setPadding(direction, e.currentTarget.value);
+    setPadding(direction, value);
   };
 
   const setPadding = useMemo(
     () => (direction: string, value: string) => {
       if (path && visible) {
-        let json = {};
-
-        if (direction) {
-          let element = _.get(mjmlJson, path);
-          element.attributes[`padding-${direction}`] = value;
-          json = _.set(mjmlJson, path, element);
-          setMjmlJson({ ...json });
-        }
+        const element = _.get(mjmlJson, path);
+        element.attributes[`padding-${direction}`] = value;
+        const json = _.set(mjmlJson, path, element);
+        setMjmlJson({ ...json });
       }
     },
-    [visible, path]
+    [visible, path, mjmlJson, setMjmlJson]
   );
 
-  //todo: optimize this function, move to useEffect, useState.
-  // its being called on every hover event.
+  // NOTE: kept as-is (called on render), same as AntD version
   const getValue = (direction: string) => {
     let value = '';
-    //todo: debug why removing active causes crash  getValue:{@mods/pad..tsx}
-    // move it to useeffect later
+
     if (path && visible && active) {
-      let element = _.get(mjmlJson, path);
-      if (!element) {
-        return;
-      }
-      value = element.attributes ? element.attributes[`padding-${direction}`] : null;
+      const element = _.get(mjmlJson, path);
+      if (!element) return '';
+
+      value = element.attributes?.[`padding-${direction}`];
+
       if (!value) {
-        value = element.attributes['padding'];
-        if (value) {
-          const [vertical, horizontal] = value.split(' ');
+        const shorthand = element.attributes?.padding;
+        if (shorthand) {
+          const [vertical, horizontal] = shorthand.split(' ');
           switch (direction) {
             case 'top':
             case 'bottom':
@@ -65,34 +63,55 @@ const Padding = ({ activePath }: PaddingProps) => {
         }
       }
     }
+
     return value;
   };
 
-  return visible ? (
-    <Form.Item label="Padding :">
-      <Input.Group style={{ marginBottom: '6px' }}>
-        <Row>
-          <Col span={11} offset={0}>
-            <Input addonBefore="top" onChange={(e) => handleChange(e, 'top')} value={getValue('top')} />
-          </Col>
-          <Col span={11} offset={2}>
-            <Input addonBefore="right" onChange={(e) => handleChange(e, 'right')} value={getValue('right')} />
-          </Col>
-        </Row>
-      </Input.Group>
-      <Input.Group>
-        <Row>
-          <Col span={11} offset={0}>
-            <Input addonBefore="bottom" onChange={(e) => handleChange(e, 'bottom')} value={getValue('bottom')} />
-          </Col>
+  if (!visible) return null;
 
-          <Col span={11} offset={2}>
-            <Input addonBefore="left" onChange={(e) => handleChange(e, 'left')} value={getValue('left')} />
-          </Col>
-        </Row>
-      </Input.Group>
-    </Form.Item>
-  ) : null;
+  const renderInput = (label: string, direction: string) => (
+    <TextField
+      fullWidth
+      size="small"
+      value={getValue(direction)}
+      onChange={(e) => handleChange(e, direction)}
+      InputProps={{
+        startAdornment: (
+          <InputAdornment position="start">
+            {label}
+          </InputAdornment>
+        ),
+      }}
+    />
+  );
+
+  return (
+    <Box>
+      <Typography variant="subtitle2" gutterBottom>
+        Padding :
+      </Typography>
+
+      <Box mb={1}>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {renderInput('top', 'top')}
+          </Grid>
+          <Grid item xs={6}>
+            {renderInput('right', 'right')}
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Grid container spacing={2}>
+        <Grid item xs={6}>
+          {renderInput('bottom', 'bottom')}
+        </Grid>
+        <Grid item xs={6}>
+          {renderInput('left', 'left')}
+        </Grid>
+      </Grid>
+    </Box>
+  );
 };
 
 export { Padding };
