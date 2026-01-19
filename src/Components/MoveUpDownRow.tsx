@@ -1,5 +1,5 @@
-import { VerticalAlignTopOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { VerticalAlignTopOutlined, VerticalAlignBottomOutlined } from '@mui/icons-material';
+import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useEditor } from '../Hooks/Editor.hook';
 import { findUniqueIdentifierFromString } from '../Utils/closestParent';
@@ -84,16 +84,18 @@ const MoveUpDown = ({ className, idRef, active }: MoveUpDownProps) => {
         }}
       >
         <Button
+          variant="outlined"
           type="primary"
           disabled={!upActive}
           onClick={MoveUp}
-          icon={<VerticalAlignTopOutlined style={{ fontSize: '20px' }} />}
+          startIcon={<VerticalAlignTopOutlined style={{ fontSize: '20px' }} />}
         />
         <Button
+          variant='outlined'
           type="primary"
           disabled={!downActive}
           onClick={MoveDown}
-          icon={<VerticalAlignBottomOutlined style={{ fontSize: '20px' }} />}
+          startIcon={<VerticalAlignBottomOutlined style={{ fontSize: '20px' }} />}
         />
       </div>
     </div>

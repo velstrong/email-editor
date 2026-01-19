@@ -5,7 +5,7 @@ import 'antd/dist/antd.css';
 import 'quill/dist/quill.snow.css';
 import './App.css';
 import { StoreProvider } from './Store/store';
-import { Modal } from 'antd';
+import { Modal } from '@mui/material';
 
 function App() {
   return (

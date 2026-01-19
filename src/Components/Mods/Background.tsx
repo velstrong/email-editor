@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import styled from 'styled-components';
 import { useEditor } from '../../Hooks/Editor.hook';
-import { Col, Form, Row } from 'antd';
+import { FormControl, Grid,InputLabel } from '@mui/material';
 import { ChromePicker } from 'react-color';
 import { useEffect, useState } from 'react';
 import { useVisibility } from '../../Hooks/Attribute.hook';
@@ -46,10 +46,12 @@ export const Background = ({ activePath, label, overrideAttribute }: BackgroundP
 
   return visible ? (
     <>
-      <Row>
-        <Col flex="auto">
-          <Form.Item label={label ? label : 'Background'}></Form.Item>
-        </Col>
+      <Grid container>
+        <Grid item flex="auto">
+          <FormControl fullWidth>
+            <InputLabel id="background-label">{label ? label : 'Background'}</InputLabel>
+          </FormControl>
+        </Grid>
 
         <ColorPicker color={color} flex="none">
           <div className="swatch" onClick={() => setActive(true)}>
@@ -62,14 +64,14 @@ export const Background = ({ activePath, label, overrideAttribute }: BackgroundP
             </div>
           ) : null}
         </ColorPicker>
-      </Row>
+      </Grid>
     </>
   ) : null;
 };
 
 const decimalToHex = (alpha: number) => (alpha === 0 ? '00' : Math.round(255 * alpha).toString(16));
 
-const ColorPicker = styled(Col)`
+const ColorPicker = styled(Grid)`
   .color {
     width: 25px;
     height: 25px;

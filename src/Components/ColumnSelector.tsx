@@ -1,4 +1,4 @@
-import { Row } from 'antd';
+import { Grid } from '@mui/material';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -152,7 +152,7 @@ const Image = ({
 }) => {
   return (
     <>
-      <Row style={{ marginBottom: '12px' }}></Row>
+      <Grid container spacing={2} style={{ marginBottom: '12px' }}></Grid>
       <SectionImage onClick={click ? click : undefined}>
         <div className="wrapper">
           <div className="border">
@@ -169,7 +169,7 @@ const Image = ({
   );
 };
 
-const SectionTitle = styled(Row)`
+const SectionTitle = styled(Grid)`
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -182,7 +182,7 @@ const SectionTitle = styled(Row)`
   }
 `;
 
-const SectionImage = styled(Row)`
+const SectionImage = styled(Grid)`
   background-color: rgb(252, 252, 252);
   border: 1px solid rgb(229, 229, 229);
   border-radius: 3px;

@@ -1,12 +1,10 @@
-import { Form, Select } from 'antd';
+import { FormControl, Select,InputLabel,MenuItem } from '@mui/material';
 import _ from 'lodash';
 import { useValue, useVisibility } from '../../Hooks/Attribute.hook';
 import { useEditor } from '../../Hooks/Editor.hook';
 import { useFonts } from '../../Hooks/useFonts';
 
 const ATTRIBUTE = 'font-family';
-
-const { Option } = Select;
 
 export const FontFamily = () => {
   const [visible, path] = useVisibility({ attribute: ATTRIBUTE });
@@ -37,16 +35,19 @@ export const FontFamily = () => {
   }
 
   return visible ? (
-    <Form.Item label="Font Family">
-      <Select value={fontvalue} onChange={handleChange}>
+    <FormControl fullWidth>
+      <InputLabel variant="standard" htmlFor="uncontrolled-native">
+        Font Family
+      </InputLabel>
+      <Select muiSkipListHighlight="true" value={fontvalue} onChange={handleChange}>
         {fontlist.map((name: string) => {
           return (
-            <Option key={name} value={name}>
+            <MenuItem key={name} value={name}>
               {name}
-            </Option>
+            </MenuItem>
           );
         })}
       </Select>
-    </Form.Item>
+    </FormControl>
   ) : null;
 };

@@ -1,5 +1,4 @@
-import { Button, Col, Input, Popover, Row, Tag, Tooltip } from 'antd';
-import FormItem from 'antd/lib/form/FormItem';
+import { Button, Grid, Input, Popover, Tooltip,FormControl } from '@mui/material';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -75,10 +74,11 @@ const AddCustomFonts = () => {
   };
 
   return (
-   
-      <Row>
-        <Col
-          span={24}
+
+      <Grid container>
+        <Grid
+          item
+          xs={24}
           style={{ justifyContent: 'center', paddingBottom: '24px', display: 'flex', rowGap: '6px', flexWrap: 'wrap' }}
         >
           {fonts &&
@@ -92,8 +92,8 @@ const AddCustomFonts = () => {
                 </Tooltip>
               ) : null
             )}
-        </Col>
-        <Col span={24} style={{ textAlign: 'center' }}>
+        </Grid>
+        <Grid item xs={24} style={{ textAlign: 'center' }}>
           <Popover
             visible={addFontActive}
             trigger="click"
@@ -102,9 +102,9 @@ const AddCustomFonts = () => {
           >
             <Button onClick={(e) => setAddFontActive(!addFontActive)}>Add custom font</Button>
           </Popover>
-        </Col>
-      </Row>
-   
+        </Grid>
+      </Grid>
+
   );
 };
 
@@ -125,13 +125,15 @@ const GetFontsValue = ({
   const [fontUrl, setFontUrl] = useState('');
   return (
     <FontInputContainer>
-      <FormItem>
-        <Input addonBefore="name" value={fontName} onChange={(e) => setFontName(e.target.value)} />
-      </FormItem>
-      <FormItem>
-        <Input addonBefore="url" value={fontUrl} onChange={(e) => setFontUrl(e.target.value)} />
-      </FormItem>
-      <FormItem style={{ textAlign: 'center' }}>
+      <FormControl fullWidth style={{ marginBottom: '8px' }}>
+        <InputLabel htmlFor="font-name">Name</InputLabel>
+        <Input id="font-name" value={fontName} onChange={(e) => setFontName(e.target.value)} />
+      </FormControl>
+      <FormControl fullWidth style={{ marginBottom: '8px' }}>
+        <InputLabel htmlFor="font-url">URL</InputLabel>
+        <Input id="font-url" value={fontUrl} onChange={(e) => setFontUrl(e.target.value)} />
+      </FormControl>
+      <FormControl style={{ textAlign: 'center' }}>
         <Button
           onClick={() => {
             popOverCallBacK(false);
@@ -151,7 +153,7 @@ const GetFontsValue = ({
         >
           cancel
         </Button>
-      </FormItem>
+      </FormControl>
     </FontInputContainer>
   );
 };

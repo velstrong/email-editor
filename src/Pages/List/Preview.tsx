@@ -1,6 +1,6 @@
-import { Button } from 'antd';
+import { Button } from '@mui/material';
 import styled from 'styled-components';
-import { PlusOutlined } from '@ant-design/icons';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import newTemplate from '../../Assets/Images/new_template.svg';
 import { useLocation } from 'react-router';
 import { ReactNode } from 'react';
@@ -84,7 +84,7 @@ export const NewItem = () => {
   return (
     <PreviewContainer>
       <div className="newTemplate">
-        <PlusOutlined style={{ fontSize: '40px' }} />
+        <AddOutlinedIcon style={{ fontSize: '40px' }} />
       </div>
       <div className="hoverItem alwaysActive">
         <div className="content">

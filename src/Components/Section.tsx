@@ -1,4 +1,4 @@
-import { Row } from 'antd';
+import { Grid } from '@mui/material';
 import _, { floor } from 'lodash';
 import { Fragment, SyntheticEvent } from 'react';
 import styled from 'styled-components';
@@ -123,7 +123,7 @@ export const Section = () => {
   return <>{dynamicRenderer}</>;
 };
 
-const SectionTitle = styled(Row)`
+const SectionTitle = styled(Grid)`
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -135,7 +135,7 @@ const SectionTitle = styled(Row)`
   }
 `;
 
-const SectionImage = styled(Row)`
+const SectionImage = styled(Grid)`
   background-color: rgb(252, 252, 252);
   border: 1px solid rgb(229, 229, 229);
   border-radius: 3px;

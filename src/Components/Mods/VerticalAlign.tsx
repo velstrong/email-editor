@@ -1,11 +1,6 @@
 import { Button, Col, Form, Row, Tooltip } from 'antd';
 import { useVisibility } from '../../Hooks/Attribute.hook';
 import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
-import {
-  VerticalAlignTopOutlined,
-  VerticalAlignMiddleOutlined,
-  VerticalAlignBottomOutlined,
-} from '@ant-design/icons/lib/icons/';
 import { useEditor } from '../../Hooks/Editor.hook';
 import _ from 'lodash';
 

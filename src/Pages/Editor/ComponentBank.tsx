@@ -1,7 +1,7 @@
 import { Col, Collapse, Row } from 'antd';
 import { Button } from '../../Components/Button';
 import { Text } from '../../Components/Text';
-import { CaretDownOutlined } from '@ant-design/icons';
+import ArrowDownwardOutlinedIcon from '@mui/icons-material/ArrowDownwardOutlined';
 import css from './Editor.module.scss';
 import '../../Assets/Css/antoveride.scss';
 import {Scrollbars} from 'react-custom-scrollbars-2';

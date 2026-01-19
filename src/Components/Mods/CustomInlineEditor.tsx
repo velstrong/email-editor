@@ -5,13 +5,13 @@ import { useCustomEditorPosition, useCustomEditorStatus } from '../../Hooks/Cust
 import { useEditor } from '../../Hooks/Editor.hook';
 import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
 import {
-  FontColorsOutlined,
-  BoldOutlined,
-  ItalicOutlined,
-  UnderlineOutlined,
-  BgColorsOutlined,
+  FormatSizeOutlined,
+  FormatBoldOutlined,
+  FormatItalicOutlined,
+  FormatUnderlinedOutlined,
+  GradientOutlined,
   LinkOutlined,
-} from '@ant-design/icons';
+} from '@mui/icons-material';
 import { InlineEditorActions } from '../../Utils/inlineEditorActions';
 import { ColorPicker } from '../ColorPicker';
 import { findClosestParent, findUniqueIdentifier } from '../../Utils/closestParent';
@@ -176,7 +176,7 @@ const InlineEditor = () => {
         }
         destroyTooltipOnHide={true}
       >
-        <Button icon={<FontColorsOutlined />} style={{ fontSize: '12px' }} size="small"></Button>
+        <Button startIcon={<FormatSizeOutlined />} style={{ fontSize: '12px' }} size="small"></Button>
       </Popover>
       <Popover
         overlayClassName="inline-editor-popover-color-picker"
@@ -192,22 +192,22 @@ const InlineEditor = () => {
         }
         destroyTooltipOnHide={true}
       >
-        <Button icon={<BgColorsOutlined />} style={{ fontSize: '12px' }} size="small"></Button>
+        <Button startIcon={<GradientOutlined />} style={{ fontSize: '12px' }} size="small"></Button>
       </Popover>
       <Button
-        icon={<BoldOutlined />}
+        startIcon={<FormatBoldOutlined />}
         onClick={(e) => InlineEditorActions(e, 'bold')}
         style={{ fontSize: '12px' }}
         size="small"
       ></Button>
       <Button
-        icon={<ItalicOutlined />}
+        startIcon={<FormatItalicOutlined />}
         onClick={(e) => InlineEditorActions(e, 'italics')}
         style={{ fontSize: '12px' }}
         size="small"
       ></Button>
       <Button
-        icon={<UnderlineOutlined />}
+        startIcon={<FormatUnderlinedOutlined />}
         onClick={(e) => InlineEditorActions(e, 'underline')}
         style={{ fontSize: '12px' }}
         size="small"
@@ -275,7 +275,7 @@ const LinkItem = ({ setLinkCallback }: LinkItemProps) => {
           setLink('');
         }}
         size="small"
-        icon={<LinkOutlined />}
+        startIcon={<LinkOutlined />}
       ></Button>
     </Popover>
   );

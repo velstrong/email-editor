@@ -1,9 +1,10 @@
 import { useVisibility } from '../../Hooks/Attribute.hook';
-import { Form, Input } from 'antd';
+import { FormGroup , TextareaAutosize    } from '@mui/material';
 import { useEditor } from '../../Hooks/Editor.hook';
 import { ChangeEvent, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
+import { Label } from '@mui/icons-material';
 
 const PROPERTY = 'content';
 
@@ -54,11 +55,13 @@ export const Content = () => {
   };
 
   return visible ? (
-    <Form.Item label="Content">
+    <FormGroup>
+     <label>{htmlBlock ? 'HTML Content' : 'Content'}</label>
       {htmlBlock ? (
-        <Input.TextArea rows={28} onChange={handleChange} value={value} />
+        <TextareaAutosize rows={28} onChange={handleChange} value={value} />
       ) : (
-        <Input.TextArea
+        <TextareaAutosize
+          aria-label="Content"
           disabled={isReadOnly ? isReadOnly : false}
           readOnly={isReadOnly ? isReadOnly : false}
           rows={3}
@@ -66,6 +69,6 @@ export const Content = () => {
           value={value}
         />
       )}
-    </Form.Item>
+    </FormGroup >
   ) : null;
 };

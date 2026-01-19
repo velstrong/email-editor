@@ -1,8 +1,4 @@
-import AlignCenterOutlined from '@ant-design/icons/lib/icons/AlignCenterOutlined';
-import AlignLeftOutlined from '@ant-design/icons/lib/icons/AlignLeftOutlined';
-import AlignRightOutlined from '@ant-design/icons/lib/icons/AlignRightOutlined';
-import PicCenterOutlined from '@ant-design/icons/lib/icons/PicCenterOutlined';
-import { Button, Col, Form, Row, Tooltip } from 'antd';
+import { Button, Grid,Tooltip,FormControl } from '@mui/material';
 import _ from 'lodash';
 import { ReactNode } from 'react';
 import { useVisibility } from '../../Hooks/Attribute.hook';
@@ -41,23 +37,23 @@ export const Align = () => {
   };
 
   return visible ? (
-    <Row>
-      <Col flex="3">
-        <Form.Item label="Align"></Form.Item>
-      </Col>
-      <Col flex="2">
-        <Row justify="space-between">
+    <Grid container>
+      <Grid item xs={3}>
+        <FormControl label="Align"></FormControl>
+      </Grid>
+      <Grid item xs={2}>
+        <Grid container justifyContent="space-between">
           {alignOptions.map(({ prop, component, title }, key) => {
             return (
-              <Col key={key}>
+              <Grid item key={key}>
                 <Tooltip title={title}>
                   <Button onClick={() => onClick(prop)} type="ghost" icon={component} />
                 </Tooltip>
-              </Col>
+              </Grid>
             );
           })}
-        </Row>
-      </Col>
-    </Row>
+        </Grid>
+      </Grid>
+    </Grid>
   ) : null;
 };

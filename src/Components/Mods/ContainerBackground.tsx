@@ -1,12 +1,13 @@
 import _ from 'lodash';
 import styled from 'styled-components';
 import { useEditor } from '../../Hooks/Editor.hook';
-import { Col, Form, Row } from 'antd';
+import { Grid,FormControlLabel } from '@mui/material';
 import { ChromePicker } from 'react-color';
 import { useEffect, useState } from 'react';
 import { useHtmlWrapper } from '../../Hooks/Htmlwrapper.hook';
 import { useVisibility } from '../../Hooks/Attribute.hook';
 import { logger } from '../../Utils/logger';
+import { Label } from '@mui/icons-material';
 
 const ATTRIBUTE = 'container-background-color';
 
@@ -46,10 +47,10 @@ export const ContainerBackground = () => {
 
   return visible ? (
     <>
-      <Row>
-        <Col flex="auto">
-          <Form.Item label="Container Background"></Form.Item>
-        </Col>
+      <Grid container spacing={2}>
+        <Grid item xs>
+          <label>Container Background</label>
+        </Grid>
 
         <ColorPicker color={color} flex="none">
           <div className="swatch" onClick={() => setActive(true)}>
@@ -62,14 +63,14 @@ export const ContainerBackground = () => {
             </div>
           ) : null}
         </ColorPicker>
-      </Row>
+      </Grid>
     </>
   ) : null;
 };
 
 const decimalToHex = (alpha: number) => (alpha === 0 ? '00' : Math.round(255 * alpha).toString(16));
 
-const ColorPicker = styled(Col)`
+const ColorPicker = styled(Grid)`
   .color {
     width: 25px;
     height: 25px;

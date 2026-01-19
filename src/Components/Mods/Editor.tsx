@@ -1,5 +1,11 @@
 import { CKEditor } from '@ckeditor/ckeditor5-react';
-import { Button, Popconfirm } from 'antd';
+import {useState} from 'react';
+import { Button } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 //import ED from 'ckeditor5-custom-build/build/ckeditor';
 import { useEffect, useMemo } from 'react';
 import { useCkeditor } from '../../Hooks/Ckeditor.hook';
@@ -12,8 +18,8 @@ import { useQuillEditor } from '../../Hooks/Quill.hook';
 import { findUniqueIdentifier } from '../../Utils/closestParent';
 import { findElementInJson } from '../../Utils/findElementInMjmlJson';
 import _ from 'lodash';
-import CopyFilled from '@ant-design/icons/lib/icons/CopyFilled';
-import DeleteFilled from '@ant-design/icons/lib/icons/DeleteFilled';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useUniqueIdGenerator } from '../../Hooks/Drag.hook';
 import { logger } from '../../Utils/logger';
 
@@ -25,6 +31,7 @@ export const Editor = () => {
   let { quillEditor } = useQuillEditor();
   const { copyActive, setCopyActive, copyX, copyY } = copy;
   const { getId } = useUniqueIdGenerator();
+
 
   useEffect(() => {
     if (quillEditor) {
@@ -98,6 +105,7 @@ export const Editor = () => {
       if (active) {
         // setQuillActive(false);
         Remove({ target: active, mjmlJson, setMjmlJson, setDelActive, setActive, setCopyActive });
+        setOpen(true);
       }
     },
     [active]
@@ -201,11 +209,44 @@ interface DeleteProps {
   deleteConfirm: () => void;
 }
 
+
 const Delete = ({ style, deleteConfirm }: DeleteProps) => {
+    const [open, setOpen] = useState(false);
+ const handleClose = () => {
+    setOpen(false);
+  };
   return (
-    <Popconfirm placement="right" title="Are you sure ?" okText="Delete" cancelText="Cancel" onConfirm={deleteConfirm}>
-      <Button style={style} type="primary">Delete</Button>
-    </Popconfirm>
+    <>
+      <Button
+        startIcon={<DeleteIcon />}
+        variant='contained'
+        style={style}
+        onClick={() => setOpen(true)}
+      >
+        
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Are you sure ?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            This action cannot be undone. Are you sure you want to proceed?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button startIcon={<DeleteIcon />} variant='contained' onClick={deleteConfirm} autoFocus>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+   </>
   );
 };
 
@@ -215,5 +256,5 @@ interface CopyProps {
 }
 
 const Copy = ({ style, onClick }: CopyProps) => {
-  return <Button style={style} onClick={onClick} type="primary">Copy</Button>;
+  return <Button startIcon={<ContentCopyIcon />} variant='contained' style={style} onClick={onClick} type="primary"></Button>;
 };

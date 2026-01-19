@@ -1,4 +1,4 @@
-import { Button, Col, Row, Modal, Layout, Input, Form, message,PageHeader } from 'antd';
+import { Snackbar,Alert, Button,Modal } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -7,10 +7,9 @@ import { success } from '../../Components/Messages';
 import { logger } from '../../Utils/logger';
 import { UNDOREDO } from '../../Utils/undoRedo';
 import Editor from '../Editor/';
-import { ExclamationCircleOutlined } from '@ant-design/icons';
+import PriorityHighOutlinedIcon from '@mui/icons-material/PriorityHighOutlined';
 import { generatePreview } from '../../Utils/previewGenerator';
 
-const { Content } = Layout;
 
 const LOADING_KEY = 'loading';
 
@@ -451,7 +450,21 @@ const EditPage = () => {
       ref.current && ref.current.loadJson(null);
     } else {
       if (templateId) {
-        message.loading({ content: 'Fetching Template...', key: LOADING_KEY, duration: 0 });
+        <Snackbar
+             open={true}
+             autoHideDuration={5000}
+             onClose={() => {}}
+           >
+            <Alert
+            severity="loading"
+            variant="filled"
+            key="LOADING_KEY"
+            sx={{ width: '100%' }}
+          >
+            Fetching Template...
+          </Alert>
+           </Snackbar>
+        
         trigger({ id: templateId });
       }
     }
@@ -462,16 +475,59 @@ const EditPage = () => {
       try {
         ref.current && ref.current.loadJson(data.response.data);
       } catch (e) {
-        message.error('Unable to load template', 3);
+        <Snackbar
+             open={true}
+             autoHideDuration={5000}
+             onClose={() => {}}
+           >
+            <Alert
+            severity="error"
+            variant="filled"
+            key="LOADING_KEY"
+            sx={{ width: '100%' }}
+          >
+            Unable to load template
+          </Alert>
+           </Snackbar>
+     
       }
     } else if (isSuccess && !data) {
-      message.error('Template is empty', 2);
+      <Snackbar
+             open={true}
+             autoHideDuration={5000}
+             onClose={() => {}}
+           >
+            <Alert
+            severity="error"
+            variant="filled"
+            key="LOADING_KEY"
+            sx={{ width: '100%' }}
+          >
+            Template is empty
+          </Alert>
+           </Snackbar>
+     
     }
     if (isSuccess) {
-      message.destroy(LOADING_KEY);
+
+      //message.destroy(LOADING_KEY);
     }
     if (isError) {
-      message.info('Network error, template not fetched.', 2);
+      <Snackbar
+             open={true}
+             autoHideDuration={5000}
+             onClose={() => {}}
+           >
+            <Alert
+            severity="error"
+            variant="filled"
+            key="LOADING_KEY"
+            sx={{ width: '100%' }}
+          >
+            Network error, template not fetched.
+          </Alert>
+           </Snackbar>
+      
     }
   }, [isError, isLoading, isSuccess, data]);
 
@@ -506,27 +562,31 @@ const EditPage = () => {
 
   return (
     <div style={{ flex: '1', display: 'flex', width: '100%', height: '100%' }}>
-      <Row style={{ height: '100%', width: '100%' }} justify="center">
+      <div style={{height: '100%', width: '100%', rowGap: 0,justifyContent: 'center', display: 'flex', flexFlow: 'row wrap'}}>
         <Prompt
           when={UNDOREDO.undo.length > 1 || UNDOREDO.redo.length > 1}
           message={() => 'Are you sure you want to leave, your changes will be lost'}
         />
-        <Col lg={24} xl={0}>
+        <div className='ant-col ant-col-lg-24 ant-col-xl-0'>
           <div style={{ textAlign: 'center', padding: '40px', paddingTop: '10%' }}>
             <h3>Sorry, You need a device with a larger screen to perform editing, atleast '{'>'}=1200px'</h3>
           </div>
-        </Col>
-        <Col xs={0} xl={24}>
-          <Layout style={{ height: '100%' }}>
-             <PageHeader
-              ghost={false}
-              onBack={() => window.history.back()}
-              title="dnde"
-              subTitle=""
-              style={{ borderBottom: '1px solid #e8e8e8' }}
-              extra={[
-                <>
-                  <SendTestMail editorRef={ref} key="4" />
+        </div>
+        <div className='ant-col ant-col-xs-0 ant-col-xl-24'>
+          <div className='ant-layout' style={{ flex:'auto',minHeight:'0', height: '100%' }}>
+            <div className="ant-page-header" style={{ borderBottom: '1px solid rgb(232, 232, 232)' }}>
+              <div className="ant-page-header-heading">
+                <div className="ant-page-header-heading-left">
+                  <div className="ant-page-header-back">
+                    <div role="button" tabIndex={0} className="ant-page-header-back-button" aria-label="Back" style={{ border: 0, background: 'transparent', padding: 0, lineHeight: 'inherit', display: 'inline-block' }}>
+                     
+                    </div>
+                    
+                  </div>
+                </div>
+                <div className="ant-page-header-heading-extra">
+<span className="ant-page-header-heading-extra">
+                    {/* <SendTestMail editorRef={ref} key="4" /> */}
                   <Button key="5" onClick={copyPreviewImage}>
                 Copy Preview Image
               </Button> 
@@ -536,15 +596,17 @@ const EditPage = () => {
                   <Button key="1" onClick={copyJsonInClipBoard}>
                     Copy as json
                   </Button>
-                </>,
-              ]}
-            ></PageHeader>
-            <Content>
+                  </span>
+                </div>
+                 </div>
+                 </div>
+                
+           
               <Editor ref={ref} />
-            </Content>
-          </Layout>
-        </Col>
-      </Row>
+           
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -553,75 +615,70 @@ export { EditPage };
 
 let MESSAGEID = 'sendMailid';
 
-const SendTestMail = ({ editorRef }: { editorRef: any }) => {
-  const [form] = Form.useForm();
-  const [visible, setVisible] = useState(false);
-  const [sendMailApi] = useSendMailMutation();
+// const SendTestMail = ({ editorRef }: { editorRef: any }) => {
+//   const [form] = Form.useForm();
+//   const [visible, setVisible] = useState(false);
+//   const [sendMailApi] = useSendMailMutation();
 
-  const onOk = () => {
-    form.validateFields().then(async (values) => {
-      if (editorRef.current) {
-        const html = editorRef.current.getHtml();
-        if (html && html.trim().length > 0) {
-          message.loading({ content: 'mail is being sent', key: MESSAGEID, duration: 0 });
-          setVisible(false);
-          const result = (await sendMailApi({
-            to: values.email,
-            html: editorRef.current.getHtml(),
-          })
-            .unwrap()
-            .catch((e) => {
-              message.error({ content: 'unable to contact server', key: MESSAGEID, duration: 0 });
-            })) as any;
-          if (result) {
-            if (result.success) {
-              message.success({ content: result.success, key: MESSAGEID, duration: 4 });
-            } else if (result.error) {
-              message.error({ content: result.error, key: MESSAGEID, duration: 2 });
-            }
-          }
-        } else {
-          message.error('design can not be converted into html');
-        }
-        setVisible(false);
-      } else {
-        setVisible(false);
-      }
-    });
-  };
+//   const onOk = () => {
+//     form.validateFields().then(async (values) => {
+//       if (editorRef.current) {
+//         const html = editorRef.current.getHtml();
+//         if (html && html.trim().length > 0) {
+//           message.loading({ content: 'mail is being sent', key: MESSAGEID, duration: 0 });
+//           setVisible(false);
+//           const result = (await sendMailApi({
+//             to: values.email,
+//             html: editorRef.current.getHtml(),
+//           })
+//             .unwrap()
+//             .catch((e) => {
+//               message.error({ content: 'unable to contact server', key: MESSAGEID, duration: 0 });
+//             })) as any;
+//           if (result) {
+//             if (result.success) {
+//               message.success({ content: result.success, key: MESSAGEID, duration: 4 });
+//             } else if (result.error) {
+//               message.error({ content: result.error, key: MESSAGEID, duration: 2 });
+//             }
+//           }
+//         } else {
+//           message.error('design can not be converted into html');
+//         }
+//         setVisible(false);
+//       } else {
+//         setVisible(false);
+//       }
+//     });
+//   };
 
-  const onCancel = () => {
-    setVisible(false);
-  };
+//   const onCancel = () => {
+//     setVisible(false);
+//   };
 
-  return (
-    <>
-      <Button key="2" type="primary" onClick={() => setVisible(!visible)}>
-        Send Test Mail
-      </Button>
-      <CustomModal
-        closable={false}
-        title={null}
-        visible={visible}
-        onOk={onOk}
-        onCancel={onCancel}
-        okText="sendMail"
-        cancelText="cancel"
-      >
-        <Form layout="vertical" form={form}>
-          <Form.Item
-            label="Email"
-            validateTrigger="onchange"
-            name="email"
-            rules={[{ required: true }, { type: 'email' }]}
-          >
-            <Input />
-          </Form.Item>
-        </Form>
-      </CustomModal>
-    </>
-  );
-};
+//   return (
+//     <>
+//       <Button key="2" type="primary" onClick={() => setVisible(!visible)}>
+//         Send Test Mail
+//       </Button>
+//       <CustomModal
+//         closable={false}
+//         title={null}
+//         visible={visible}
+//         onOk={onOk}
+//         onCancel={onCancel}
+//         okText="sendMail"
+//         cancelText="cancel"
+//       >
+//         <FormGroup layout="vertical" form={form}>
+//           <TextField label="Email"
+//             name="email"
+//             rules={[{ required: true }, { type: 'email' }]} variant="outlined" />
+//         </FormGroup>
+//       </CustomModal>
+//     </>
+//   );
+// };
 
 const CustomModal = styled(Modal)`
   .ant-modal-footer {
@@ -641,7 +698,7 @@ const modalConfirmLoadLocalState = async (okCallback: () => void, cancelCallback
   return new Promise<boolean>((resolve, reject) => {
     Modal.confirm({
       title: 'Confirm',
-      icon: <ExclamationCircleOutlined />,
+      icon: <PriorityHighOutlinedIcon />,
       content: 'local save found do you want to load it?',
       okText: 'restore',
       cancelText: 'cancel',

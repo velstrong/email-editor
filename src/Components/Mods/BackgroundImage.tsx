@@ -1,4 +1,4 @@
-import { Col, Form, Row, Input } from 'antd';
+import { Grid,FormControl, FormLabel,FormGroup ,Input } from '@mui/material';
 import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useVisibility } from '../../Hooks/Attribute.hook';
@@ -77,32 +77,33 @@ const BackgroundImage = () => {
   };
 
   return (
-    <Form.Item label="Background Image:">
-      <Input.Group>
-        <Row gutter={[0, 4]}>
+    <FormControl fullWidth style={{ marginBottom: '8px' }}>
+      <FormLabel id="background-image-label">Background Image:</FormLabel>
+      <FormGroup>
+        <Grid container spacing={1}>
           {urlVisibility ? (
-            <Col span={24}>
+            <Grid item xs={12}>
               <Input addonBefore="url" onChange={onChangeUrl} value={url} />
-            </Col>
+            </Grid>
           ) : null}
           {sizeVisibility ? (
-            <Col span={24}>
+            <Grid item xs={12}>
               <Input
                 addonBefore="size"
                 onChange={onChangeSize}
                 value={size}
                 placeholder="px/percent/'cover'/'contain'"
               />
-            </Col>
+            </Grid>
           ) : null}
           {repeatVisiblity ? (
-            <Col span={24}>
+            <Grid item xs={12}>
               <Input addonBefore="repeat" onChange={onChangeRepeat} value={repeat} placeholder="repeat" />
-            </Col>
+            </Grid>
           ) : null}
-        </Row>
-      </Input.Group>
-    </Form.Item>
+        </Grid>
+      </FormGroup>
+    </FormControl>
   );
 };
 

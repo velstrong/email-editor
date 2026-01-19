@@ -1,4 +1,4 @@
-import { Col, Row } from 'antd';
+import { Grid } from '@mui/material';
 import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useEditor } from '../Hooks/Editor.hook';
@@ -82,11 +82,11 @@ const BodyAttributes = () => {
 
 const Title = ({ title }: { title: string }) => {
   return (
-    <Row justify="center">
-      <Col span={24} style={{ textAlign: 'center' }}>
+    <Grid container justifyContent="center">
+      <Grid item xs={12} style={{ textAlign: 'center' }}>
         <span className="title">{title}</span>
-      </Col>
-    </Row>
+      </Grid>
+    </Grid>
   );
 };
 

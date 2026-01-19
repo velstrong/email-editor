@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useEditor } from '../../Hooks/Editor.hook';
-import { Form, Input } from 'antd';
+import { FormControl, Input,InputLabel } from '@mui/material';
 import { useVisibility } from '../../Hooks/Attribute.hook';
 
 const ATTRIBUTE = 'border-radius';
@@ -64,8 +64,9 @@ export const BorderRadius = ({ activePath }: BorderRadiusProps) => {
   }
 
   return visible ? (
-    <Form.Item label="Border Radius">
+    <FormControl fullWidth>
+      <InputLabel>Border Radius</InputLabel>
       <Input onChange={handleChange} value={value} onKeyDown={onKeyDown} />
-    </Form.Item>
+    </FormControl>
   ) : null;
 };

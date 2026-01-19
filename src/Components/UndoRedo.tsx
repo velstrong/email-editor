@@ -1,5 +1,5 @@
-import { UndoOutlined, RedoOutlined } from '@ant-design/icons';
-import { Button, Tooltip } from 'antd';
+import { UndoOutlined, RedoOutlined } from '@mui/icons-material';
+import { Button, Tooltip } from '@mui/material';
 import { UNDOREDO } from '../Utils/undoRedo';
 
 interface UndoRedoProps {
@@ -21,23 +21,25 @@ const UndoRedo = ({ undoCallback, redoCallback }: UndoRedoProps) => {
     >
       <Tooltip mouseEnterDelay={0.5} color="cyan" title="undo" placement="right">
         <Button
+        variant='outlined'
           disabled={UNDOREDO.isUndoEmpty()}
           onClick={undoCallback}
           type="default"
           size="large"
           style={{ background: '#fff' }}
-          icon={<UndoOutlined />}
+          startIcon={<UndoOutlined />}
         />
       </Tooltip>
 
       <Tooltip mouseEnterDelay={0.5} color="cyan" title="redo" placement="right">
         <Button
+          variant='outlined'
           disabled={UNDOREDO.isRedoEmpty()}
           onClick={redoCallback}
           type="default"
           style={{ background: '#fff' }}
           size="large"
-          icon={<RedoOutlined />}
+          startIcon={<RedoOutlined />}
         />
       </Tooltip>
     </div>

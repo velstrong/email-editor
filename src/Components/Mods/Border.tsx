@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { useEditor } from '../../Hooks/Editor.hook';
-import { Form, Input } from 'antd';
+import { FormControl, Input,InputLabel } from '@mui/material';
 import { useValue, useVisibility } from '../../Hooks/Attribute.hook';
 import { useEffect, useState } from 'react';
 
@@ -38,9 +38,10 @@ export const Border = ({ activePath, label, attribute_name }: BorderProps) => {
   };
 
   return visible ? (
-    <Form.Item label={label ? label : 'Border'}>
+    <FormControl fullWidth>
+      <InputLabel>{label ? label : 'Border'}</InputLabel>
       <Input onChange={handleChange} value={value} onKeyDown={onKeyDown} />
-    </Form.Item>
+    </FormControl>
   ) : null;
 };
 

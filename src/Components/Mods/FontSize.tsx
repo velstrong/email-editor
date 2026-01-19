@@ -1,5 +1,5 @@
 import { useValue, useVisibility } from '../../Hooks/Attribute.hook';
-import { Form, Input } from 'antd';
+import { FormControl, TextField,InputLabel } from '@mui/material';
 import { useEditor } from '../../Hooks/Editor.hook';
 import { ChangeEvent } from 'react';
 import _ from 'lodash';
@@ -23,8 +23,8 @@ export const FontSize = () => {
   };
 
   return visible ? (
-    <Form.Item label="FontSize">
-      <Input onChange={handleChange} value={getValue()} />
-    </Form.Item>
+    <FormControl fullWidth>
+        <TextField label="Font Size" id="font-size" onChange={handleChange} value={getValue()} />
+    </FormControl>
   ) : null;
 };

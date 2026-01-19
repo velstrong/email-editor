@@ -1,6 +1,4 @@
-import { message } from 'antd';
 import _ from 'lodash';
-import { error } from '../Components/Messages';
 import { columnPlaceholder } from '../Components/Section';
 import {
   findClosestParent,
@@ -35,7 +33,7 @@ const Add = ({ target, droppedConfig, setMjmlJson, mjmlJson, uid }: AddProps) =>
     if (uniqueClassName === 'identifier-mj-body' || uniqueClassName === 'identifier-mj-section') {
       const cleanedMjmlJson = cleanMjmlJson(mjmlJson);
       setMjmlJson({ ...cleanedMjmlJson });
-      message.error('Use a section to place the item');
+      alert('Use a section to place the item');
       return null;
     }
   }
@@ -43,7 +41,8 @@ const Add = ({ target, droppedConfig, setMjmlJson, mjmlJson, uid }: AddProps) =>
   if (droppedConfig.tagName && droppedConfig.tagName === 'mj-section') {
     if (uniqueClassName !== 'identifier-mj-body') {
       const msg = 'Sections can not be nested! it will break mobile design';
-      message.info(msg);
+      alert(msg);
+
       logger.log(`operation add: ${msg}`);
       return;
     }

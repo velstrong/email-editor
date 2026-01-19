@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { Tabs } from 'antd';
+import { Tabs } from '@mui/material';
 import { UNDOREDO } from '../Utils/undoRedo';
 import { useEditor } from '../Hooks/Editor.hook';
 import { useHtmlWrapper } from '../Hooks/Htmlwrapper.hook';

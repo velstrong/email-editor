@@ -2,7 +2,7 @@ import { View } from './View';
 import css from './Editor.module.scss';
 import { Attributes, OnlyAttributesDrawer } from './Attributes';
 import { ComponentBank } from './ComponentBank';
-import { Button } from 'antd';
+import { Button } from '@mui/material';
 import mjml2html from 'mjml-browser';
 import { useEditor } from '../../Hooks/Editor.hook';
 import { forwardRef, useImperativeHandle, useState } from 'react';
